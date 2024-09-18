@@ -1,0 +1,529 @@
+<!-- Product Grid Section -->
+<section class="product-grid">
+  <h2 class="grid-title">{{ section.settings.grid_title }}</h2>
+
+  <div class="grid-container">
+    {% for block in section.blocks %}
+    <!-- Each product card -->
+    <div class="product-card">
+      <!-- Display the uploaded image, or one of the default images if none uploaded -->
+      {% if block.settings.product_image != blank %}
+      <img src="{{ block.settings.product_image | image_url }}" alt="{{ block.settings.product_title }}" class="product-image">
+      {% else %}
+      {% assign default_images = "image 822.jpg,image 823.jpg,image 824.jpg,image 825.jpg,image 826.jpg,image 827.jpg" | split: ',' %}
+      <img src="{{ default_images[forloop.index0] | asset_url }}" alt="{{ block.settings.product_title }}" class="product-image">
+      {% endif %}
+      
+      <div class="product-overlay" data-title="{{ block.settings.product_title }}" data-description="{{ block.settings.product_description }}" data-price="{{ block.settings.product_price }}" data-color="{{ block.settings.product_color }}" data-size="{{ block.settings.product_size }}" data-variant-id="{{ block.settings.product_variant_id }}" data-image="{{ block.settings.product_image | image_url }}">
+        <span class="product-plus">+</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Modal Structure -->
+<div id="productModal" class="product-modal">
+    <div class="modal-content">
+        <span class="close">&times;</span> <!-- Close button (X) -->
+        <div class="main">
+            <div class="modal-left">
+                <img id="modal-product-image" src="" alt="Product Image" class="modal-product-image">
+            </div>
+            <div class="modal-right">
+                <h2 id="modal-product-title"></h2>
+                <p id="modal-product-price"></p>
+                <p id="modal-product-description"></p>
+            </div>
+        </div>
+
+        <div class="product-options">
+            <label for="modal-product-color">Color:</label>
+            <div id="modal-product-color"></div>
+        </div>
+        <div>
+            <label for="modal-product-size">Size:</label>
+            <select id="modal-product-size"></select>
+        </div>
+        <div>
+            <button id="add-to-cart-btn">Add to Cart</button>
+        </div>
+    </div>
+</div>
+
+<!-- Cart Confirmation Modal -->
+<div id="cartModal" class="cart-modal">
+  <div class="cart-modal-content">
+    <span class="cart-close">&times;</span> <!-- Close button for Cart Modal -->
+    <p>✔ Item added to your cart</p>
+    <div class="cart-product-info">
+      <img id="cart-product-image" src="" alt="Product Image" class="cart-product-image">
+      <div class="cart-product-details">
+        <h4 id="cart-product-title"></h4>
+        <p id="cart-product-size"></p>
+        <p id="cart-product-color"></p>
+      </div>
+    </div>
+    <div class="additional-product-info" style="display:none;"> <!-- Hide initially -->
+      <img src="{{ 'image 824.jpg' | asset_url }}" alt="Soft Winter Jacket" class="cart-product-image">
+      <div class="cart-product-details">
+        <h4>Soft Winter Jacket</h4>
+        <p>Size: Medium</p>
+        <p>Color: Black</p>
+      </div>
+    </div>
+   
+  </div>
+</div>
+
+<!-- CSS for the grid, modal, and cart confirmation -->
+<style>
+
+  
+  /* Basic Styles for Title */
+  .grid-title {
+    font-size: 3rem;
+    text-align: left;
+     margin-bottom: 15px;
+    margin-top: 6rem;
+    margin-left: 7rem; 
+  }
+
+  /* Grid Container */
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns on desktop */
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  /* Product Card */
+  .product-card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .product-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Overlay for the "+" sign */
+  .product-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    cursor: pointer;
+  }
+
+  .product-card:hover .product-overlay {
+    opacity: 1;
+  }
+
+  .product-plus {
+    color: #fff;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  .product-grid{
+    overflow: hidden;
+  }
+
+  /* Modal Styling */
+  .product-modal, .cart-modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content, .cart-modal-content {
+    background-color: #fff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 311px;
+  }
+
+  .cart-modal-content{
+    overflow: scroll;
+    height: 400px;
+  }
+
+  .main {
+    display: flex;
+  }
+
+  .modal-left {
+    flex: 1;
+  }
+  #add-to-cart-btn{
+    margin-top: 45px;
+  }
+
+  .color-option {
+    border: 1px solid black;
+    border-left: 6px solid grey; /* Default color */
+    padding: 0.5rem 43px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .color-option.selected {
+    background-color: black; /* Change background to black for selected option */
+    color: white; /* Change text to white for selected option */
+    border-left-color: black; /* Change the border color when selected */
+  }
+
+  .color-option:hover {
+    background-color: #f0f0f0;
+    color: #333;
+  }
+
+  .modal-right {
+    margin-left: 1rem;
+    line-height: 0px;
+  }
+
+  .modal-product-image, .cart-product-image {
+    width: 125px;
+    height: auto;
+    margin-top: 10px;
+  }
+
+  #modal-product-title, #cart-product-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  #modal-product-price {
+    font-size: 16px;
+    color: #333;
+    font-weight: 400;
+    line-height: initial;
+  }
+
+  #modal-product-description {
+    font-size: 12px;
+    line-height: normal;
+  }
+
+  #modal-product-color {
+    display: flex;
+  }
+
+  .product-options {
+    margin-bottom: 20px;
+  }
+
+  .product-options label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 1.5rem;
+    color: #333;
+  }
+
+  #modal-product-size {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.5rem;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    align-items: center;
+    display: flex;
+    margin: auto;
+    text-align: center;
+  }
+
+  #add-to-cart-btn, #view-cart-btn, #checkout-btn {
+    background-color: #000;
+    color: #fff;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  #add-to-cart-btn:hover, #view-cart-btn:hover, #checkout-btn:hover {
+    background-color: #333;
+  }
+
+  /* Close button (X) styling */
+  .close, .cart-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #333;
+  }
+
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .grid-container {
+      grid-template-columns: repeat(2, 1fr); /* 2 columns on tablet/mobile */
+    }
+
+    
+  }
+
+  @media (max-width: 480px) {
+    .grid-container {
+      grid-template-columns: repeat(2, 1fr); /* Still 2 columns on mobile */
+      gap: 5px; /* Reduced gap for smaller screens */
+      overflow: hidden;
+      width: 325px
+    }
+
+    .grid-title{
+      font-size:24px;
+      margin: 30px auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    .color-option{
+      padding: 0.5rem 44px;
+    }
+
+    #modal-product-title {
+      font-size: 1.2rem;
+    }
+  }
+</style>
+
+<!-- JavaScript for Modal, Add to Cart, and Cart Confirmation -->
+<script>
+ document.addEventListener('DOMContentLoaded', function () {
+  const overlays = document.querySelectorAll('.product-overlay');
+  const modal = document.getElementById('productModal');
+  const closeModalBtn = document.querySelector('.close');
+  const cartModal = document.getElementById('cartModal');
+  const closeCartModalBtn = document.querySelector('.cart-close');
+
+  const modalProductTitle = document.getElementById('modal-product-title');
+  const modalProductDescription = document.getElementById('modal-product-description');
+  const modalProductPrice = document.getElementById('modal-product-price');
+  const modalProductImage = document.getElementById('modal-product-image');
+  const modalProductColor = document.getElementById('modal-product-color');
+  const modalProductSize = document.getElementById('modal-product-size');
+
+  const cartProductTitle = document.getElementById('cart-product-title');
+  const cartProductImage = document.getElementById('cart-product-image');
+  const cartProductSize = document.getElementById('cart-product-size');
+  const cartProductColor = document.getElementById('cart-product-color');
+
+  const softWinterJacketSection = document.createElement('div');
+  softWinterJacketSection.classList.add('additional-product-info');
+  softWinterJacketSection.innerHTML = `
+    <img src="{{ 'image 828.jpg' | asset_url }}" alt="Soft Winter Jacket" class="cart-product-image">
+    <div class="cart-product-details">
+      <h4>Soft Winter Jacket</h4>
+      <p>Size: M</p>
+      <p>Color: Black</p>
+    </div>
+  `;
+  
+  const addToCartBtn = document.getElementById('add-to-cart-btn');
+  
+  let selectedVariantId = '';
+
+  // Ensure the modal doesn't open on page refresh
+  function openModal() {
+    modal.style.display = 'flex';
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+  }
+
+  // Open modal only when clicking a product overlay
+  overlays.forEach(overlay => {
+    overlay.addEventListener('click', function () {
+      const productTitle = overlay.getAttribute('data-title');
+      const productDescription = overlay.getAttribute('data-description');
+      const productPrice = overlay.getAttribute('data-price');
+      const productImage = overlay.getAttribute('data-image');
+      const productSizes = overlay.getAttribute('data-size').split(',');
+      const productColors = overlay.getAttribute('data-color').split(',');
+      selectedVariantId = overlay.getAttribute('data-variant-id'); // Get the variant ID
+
+      // Update modal content
+      modalProductTitle.innerText = productTitle;
+      modalProductDescription.innerText = productDescription;
+      modalProductPrice.innerText = productPrice;
+      modalProductImage.src = productImage;
+
+      modalProductColor.innerHTML = '';
+  productColors.forEach(color => {
+  const colorDiv = document.createElement('div');
+  colorDiv.classList.add('color-option');
+  colorDiv.innerText = color;
+  // Check if the color is white, and set the border color accordingly
+  if (color.toLowerCase() === 'white') {
+    colorDiv.style.borderLeftColor = 'grey';
+  } else {
+    colorDiv.style.borderLeftColor = color; // Otherwise, set the border color to the color itself
+  }
+
+  colorDiv.addEventListener('click', function () {
+    // Remove selection from other color options
+    document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+    // console.log("{{ 'image 824.jpg' | asset_url }}");
+
+    // Add selection to the clicked option
+    colorDiv.classList.add('selected');
+
+    // Dynamically change the border-left color of the selected option
+    if (color.toLowerCase() === 'white') {
+      colorDiv.style.borderLeftColor = 'grey'; // Set to grey if the selected color is white
+    } else {
+      colorDiv.style.borderLeftColor = color; // Otherwise, use the actual color
+    }
+  });
+
+  modalProductColor.appendChild(colorDiv);
+});
+
+
+      // Populate size options (dropdown)
+      modalProductSize.innerHTML = '';
+      productSizes.forEach(size => {
+        const sizeOption = document.createElement('option');
+        sizeOption.value = size;
+        sizeOption.innerText = size;
+        modalProductSize.appendChild(sizeOption);
+      });
+
+      openModal(); // Only opens when clicked
+    });
+  });
+
+  // Close product modal
+  closeModalBtn.addEventListener('click', closeModal);
+
+  // Add product to cart and display in cart modal
+  addToCartBtn.addEventListener('click', function () {
+    const selectedColor = document.querySelector('.color-option.selected');
+    const selectedSize = modalProductSize.value;
+
+    if (!selectedColor) {
+      alert("Please select a color.");
+      return;  // Ensure color is selected
+    }
+
+    // Update cart modal content for the selected product
+    cartProductTitle.innerText = modalProductTitle.innerText;
+    cartProductSize.innerText = "Size: " + modalProductSize.value;
+    cartProductColor.innerText = "Color: " + selectedColor.innerText;
+    cartProductImage.src = modalProductImage.src;
+
+    // If the selected color is "Black" and the size is "Medium", show the Soft Winter Jacket in the cart
+    if (selectedColor.innerText === 'Black' && selectedSize === 'M') {
+      cartModal.querySelector('.cart-modal-content').appendChild(softWinterJacketSection); // Add Soft Winter Jacket details to the modal
+    }
+
+    closeModal();
+    cartModal.style.display = 'flex';
+  });
+
+  // Close cart modal
+  closeCartModalBtn.addEventListener('click', function () {
+    cartModal.style.display = 'none';
+  });
+});
+</script>
+
+<!-- Schema for Theme Customizer -->
+{% schema %}
+{
+  "name": "customgrid",
+  "settings": [
+    {
+      "type": "text",
+      "id": "grid_title",
+      "label": "Grid Title",
+      "default": "Tisso Vision in the Wild"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product Block",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "product_image",
+          "label": "Product Image"
+        },
+        {
+          "type": "text",
+          "id": "product_title",
+          "label": "Product Title",
+          "default": "Product Title"
+        },
+        {
+          "type": "textarea",
+          "id": "product_description",
+          "label": "Product Description",
+          "default": "Product description goes here."
+        },
+        {
+          "type": "text",
+          "id": "product_price",
+          "label": "Product Price",
+          "default": "$980.00"
+        },
+        {
+          "type": "text",
+          "id": "product_color",
+          "label": "Product Colors",
+          "default": "White,Black"
+        },
+        {
+          "type": "text",
+          "id": "product_size",
+          "label": "Product Sizes",
+          "default": "S,M,L"
+        },
+        {
+          "type": "text",
+          "id": "product_variant_id",
+          "label": "Product Variant ID",
+          "default": "123456789"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "costumgrid",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
