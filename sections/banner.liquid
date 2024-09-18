@@ -1,0 +1,148 @@
+<link rel="stylesheet" href="{{ 'banner.css' | asset_url }}">
+<!-- Sections/banner.liquid -->
+
+{% comment %} comment for check {% endcomment %}
+<!-- Top Bar Section -->
+<section class="banner">
+  <header class="top-bar">
+    <!-- Hamburger Menu Icon (mobile only) -->
+    <div class="hamburger-menu" id="hamburgerMenu">
+      <span>&#9776;</span>
+    </div>
+
+    <!-- Store Name Centered -->
+    <div class= "center">
+      <div class="store-name">{{section.settings.store_name}}</div>
+    </div>
+
+    <!-- Text and Button for Desktop (on the right) -->
+    <!-- <div class="desktop-elements"> -->
+      <p class="dropdown-text hide">{{section.settings.center_text}}</p>
+      <button class="choose-gift-btn hide">{{ section.settings.choose_gift_button_text}} <span class="arrow">&#8594;</span></button>
+    <!-- </div> -->
+  </header>
+<!-- Dropdown Menu for Mobile -->
+  <div class="dropdown-menu" id="dropdownMenu">
+    <p class="dropdown-text">{{section.settings.center_text}}</p>
+    <button class="choose-gift-btn">{{section.settings.choose_gift_button_text}} <span class="arrow">&#8594;</span></button>
+  </div>
+
+   <div class="m-heading-con">
+        <div class="m-heading"><h1>{{section.settings.heading}}</h1></div>
+        <div class="m-para"><p style="text-align: center;">{{section.settings.description-m}}</p></div>
+    </div>
+
+  <!-- Top Image -->
+  <div class="top-image-container">
+    <img src="{{ 'frame.jpg' | asset_url }}" alt="Top Image" class="top-image">
+    <button class="shop-btn hide-btn m-btn">{{ section.settings.shop_button_text }} <span class="arrow">&#8594;</span></button>
+  </div>
+
+
+  <!-- Bottom Section: Text on Left, Image on Right -->
+  <div class="bottom-section">
+    <div class="left-content">
+      <h1>{{ section.settings.heading }}</h1>
+      <p>{{ section.settings.description }}</p>
+      <button class="shop-btn">{{ section.settings.shop_button_text }} <span class="arrow">&#8594;</span></button>
+    </div>
+
+    <!-- Right Content: Background Image -->
+    <div class="right-image-container">
+      <img src="{{ 'frame.jpg' | asset_url }}" alt="Right Image" class="right-image">
+    </div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    {{ section.settings.bottom_text }}
+  </div>
+</section>
+
+<script>
+    const hamburgerMenu = document.getElementById('hamburgerMenu')
+const dropdownMenu = document.getElementById('dropdownMenu')
+
+let isOpen = false;
+
+
+hamburgerMenu.addEventListener('click' , function(){
+
+    if(isOpen)
+    {
+        dropdownMenu.classList.remove('open')
+        dropdownMenu.style.display = 'none'
+        hamburgerMenu.innerHTML = '&#9776'
+    }
+    else
+    {
+        dropdownMenu.classList.add('open')
+        dropdownMenu.style.display ='flex'
+        hamburgerMenu.innerHTML = '&times;'
+    }
+    isOpen = !isOpen;
+})
+
+</script>
+
+{% schema %}
+    {
+      "name": "costumbanner",
+      "settings": [
+        {
+          "type": "text",
+          "id": "store_name",
+          "label": "Store Name",
+          "default": "Tisso Vision"
+        },
+        {
+          "type": "text",
+          "id": "center_text",
+          "label": "Center Text",
+          "default": "Find the ideal gift for your loved ones."
+        },
+        {
+          "type": "text",
+          "id": "choose_gift_button_text",
+          "label": "Choose Gift Button Text",
+          "default": "Choose Gift"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "The Gift Guide"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season."
+        },
+        {
+          "type": "textarea",
+          "id": "description-m",
+          "label": "Description-m",
+          "default": "Discover Joy: Your Ultimate Holiday Gift Destination."
+        },
+        {
+          "type": "text",
+          "id": "shop_button_text",
+          "label": "Shop Button Text",
+          "default": "Shop Now"
+        },
+        {
+          "type": "text",
+          "id": "bottom_text",
+          "label": "Bottom Bar Text",
+          "default": "Sustainable, ethically made clothes"
+        }
+      ],
+      "presets": [
+        {
+          "name": "costumbanner",
+          "category": "Custom"
+        }
+      ]
+    }
+    {% endschema %}
